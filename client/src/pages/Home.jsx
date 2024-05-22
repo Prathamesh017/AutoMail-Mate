@@ -1,5 +1,5 @@
 import React from 'react'
-import GoogleLogin from '../components/googleLogin'
+import GoogleLogin from '../components/google-login'
 
 function Home() {
   return (

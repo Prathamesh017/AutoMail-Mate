@@ -12,23 +12,23 @@ export const getEmails = async (req: Request, res: Response) => {
       },
     });
     const messages = response.data.messages;
-
-
-    const emailDetails = await axios.get(
-      `https://www.googleapis.com/gmail/v1/users/me/messages/${messages[0].id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      }
-    );
-
-   const senderDetails=emailDetails.data.payload.headers.filter((header:any)=>{
-    return header.name==='From'
-   })
-  
-    res.status(200).json({ status: "sucess",data:{
-      email:emailDetails.data.snippet,sender:senderDetails[0]?.value}
+     let limit=0;
+    const result=[];
+    for(let i=limit;i<limit+5;i++){
+      const emailDetails = await axios.get(
+        `https://www.googleapis.com/gmail/v1/users/me/messages/${messages[i].id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      const senderDetails=emailDetails.data.payload.headers.filter((header:any)=>{
+        return header.name==='From'
+       })
+       result.push({email:emailDetails.data.snippet,sender:senderDetails[0]?.value})
+    }  
+    res.status(200).json({ status: "sucess",data:result
     ,message: "email details" });
   } catch (e: any) {
     res.status(400).json({ status: "failure", message: e });
