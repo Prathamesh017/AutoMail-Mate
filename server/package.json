@@ -7,12 +7,12 @@
   "scripts": {
     "build": "npx tsc",
     "start": "nodemon -I --exec node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/index.ts"
-   
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "^0.11.3",
     "axios": "^1.7.1",
     "bullmq": "^5.7.9",
     "cors": "^2.8.5",
@@ -20,6 +20,7 @@
     "express": "^4.19.2",
     "googleapis": "^137.1.0",
     "nodemon": "^3.1.0",
+    "openai": "^4.47.1",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
