@@ -64,3 +64,61 @@ export const generateEmailResponse = async (req: Request, res: Response) => {
 
   }
 }
+
+
+// @api - /email/reply POST
+// @desc - reply emails response
+export const sendEmailResposne = async (req: Request, res: Response) => {
+  try {
+
+    const access_token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+
+    const From = req.body.From;
+    const To = req.body.To;
+    const content = req.body.content;
+
+    const emailLines = [
+      `From: ${From}`,
+      `To: ${To}`,
+      'Subject: AI Generated Response',
+      'Content-Type: multipart/alternative; boundary="boundary"',
+      '',
+      '--boundary',
+      'Content-Type: text/plain; charset="UTF-8"',
+      '',
+      `${content}`,
+      '',
+      '--boundary',
+      'Content-Type: text/html; charset="UTF-8"',
+      '',
+      `<div>${content}</div>`,
+      '',
+      '--boundary--'
+    ].join('\r\n');
+
+    const encodedMessage = Buffer.from(emailLines)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+     await axios.post(
+      `https://gmail.googleapis.com/gmail/v1/users/${From}/messages/send`,
+      {
+        raw: encodedMessage
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    res.status(200).json({
+      status: "success",
+      message: "Email Sent"
+    });
+
+  } catch (error: any) {
+    res.status(400).json({ status: "failure", message: error });
+  }
+}

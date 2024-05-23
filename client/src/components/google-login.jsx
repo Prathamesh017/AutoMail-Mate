@@ -1,14 +1,22 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import {useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 
 function GoogleLogin() {
   const navigate=useNavigate()
   const login = useGoogleLogin({
     onSuccess: async(tokenResponse) => {
+  
        const {access_token}=tokenResponse;
        localStorage.setItem("token",JSON.stringify(access_token));
-       navigate("/dashboard")
+       const response = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+            headers: {
+                'Authorization': `Bearer ${access_token}`
+            }
+        });
+        localStorage.setItem("user-email",JSON.stringify(response.data.email))
+        navigate("/dashboard")
        
     } ,
     scope:process.env.REACT_APP_GOOGLE_SCOPE

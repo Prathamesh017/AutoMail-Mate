@@ -27,7 +27,8 @@ function EmailContainer({ data,fetchEmails,limit,isError}) {
                 </div>
                 <button
                   className="hover:border hover:border-slate-200 rounded"
-                  onClick={() => {setIsOpen(true);setEmailContent(emailObj.email)}}
+                  onClick={() => {setIsOpen(true);
+                  setEmailContent({content:emailObj.email,sender:emailObj.sender.split(/<|>/)[1]})}}
                 >
                   <FaReply className="m-1" />
                 </button>
@@ -51,7 +52,7 @@ function EmailContainer({ data,fetchEmails,limit,isError}) {
 
       {isOpen && <div className="fixed inset-0 bg-gray-900 opacity-50"></div>
       && 
-      <EmailPop isOpen={isOpen} setIsOpen={setIsOpen} content={emailContent}></EmailPop>
+      <EmailPop sender={emailContent.sender} isOpen={isOpen} setIsOpen={setIsOpen} content={emailContent.content}></EmailPop>
       }
 
       {data.length===0 &&(!isError) && <Skeleton count={5} baseColor='#202124' /> }
