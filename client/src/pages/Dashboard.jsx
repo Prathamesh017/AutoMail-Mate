@@ -24,13 +24,15 @@ function Dashboard() {
       setData([]);
       setIsError(false);
       const access_token=JSON.parse(localStorage.getItem("token"));
+      const mailType=JSON.parse(localStorage.getItem("mail"))
       const config = {
         headers: {
           Authorization: `Bearer ${access_token}`,
           limit:emailCount,
         },
       }
-      const response = await axios.get(`${url}/email`,config);
+      let endpoint=mailType==="gmail"?"gmail":"outlook"
+      const response = await axios.get(`${url}/mail/${endpoint}`,config);
       setData(response.data.data);
       setLimit(emailCount);
   

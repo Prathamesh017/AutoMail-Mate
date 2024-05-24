@@ -1,5 +1,5 @@
 import { Queue, Worker } from 'bullmq';
-import { fetchEmailService } from './service/email-service.ts';
+import { fetchEmailService } from './service/gmail-service.ts';
 import { notifyClient } from './index.ts';
 
 

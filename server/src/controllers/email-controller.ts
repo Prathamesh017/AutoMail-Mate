@@ -2,25 +2,22 @@ import { Request, Response } from "express"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import axios from "axios";
 import { emailQueue } from "../worker.ts";
-import { fetchEmailService } from "../service/email-service.ts";
+import { fetchEmailService } from "../service/gmail-service.ts";
 
 
 
 
-// @api - email/ GET
-// @desc - get emails
-
+// @api - mail/gmail GET
+// @desc - get gmail emails
 export const getEmails = async (req: Request, res: Response) => {
   try {
     const access_token = (req.headers.authorization && req.headers.authorization.split(' ')[1]) as string;
     const limit = req.headers.limit ? +req.headers?.limit : 0;
 
     const result=await fetchEmailService(access_token,limit);    
-      emailQueue.add("email-fetch-job", { access_token,latestSender:result[0].sender},) 
-      
-    
+      emailQueue.add("email-fetch-job", { access_token,latestSender:result[0].sender},)
     res.status(200).json({
-      status: "sucess", data: result
+      status: "success", data: result
       , message: "email details"
     });
 
@@ -30,7 +27,7 @@ export const getEmails = async (req: Request, res: Response) => {
   }
 }
 
-// @api - /email/response POST
+// @api - /mail/response POST
 // @desc - get emails response
 export const generateEmailResponse = async (req: Request, res: Response) => {
   try {
@@ -54,7 +51,7 @@ export const generateEmailResponse = async (req: Request, res: Response) => {
 }
 
 
-// @api - /email/reply POST
+// @api - /mail/gmail/reply POST
 // @desc - reply emails response
 export const sendEmailResposne = async (req: Request, res: Response) => {
   try {

@@ -21,7 +21,6 @@ export const fetchEmailService=async(access_token:string,limit:number)=>{
         return header.name === 'From'
       })
       result.push({ email: emailDetails.data.snippet, sender: senderDetails[0]?.value })
-
     }
     return result;
 }
