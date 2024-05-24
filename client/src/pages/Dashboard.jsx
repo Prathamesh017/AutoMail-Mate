@@ -9,6 +9,16 @@ function Dashboard() {
   const [isError,setIsError]=useState(false);
   const navigate=useNavigate();
   let url=process.env.REACT_APP_SERVER_URL;
+  const WS_URL = process.env.REACT_APP_WEBSOCKET_URL;
+  const socket = new WebSocket(WS_URL);
+  socket.addEventListener("open", event => {
+     console.log("Connection Established")
+  });
+  // Listen for messages
+  socket.addEventListener("message", event => {
+    console.log("Message from server ", event.data)
+    fetchEmails(0);
+  });
   async function fetchEmails(emailCount){
     try {
       setData([]);

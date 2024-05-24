@@ -1,41 +1,29 @@
 import { Request, Response } from "express"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import axios from "axios";
+import { emailQueue } from "../worker.ts";
+import { fetchEmailService } from "../service/email-service.ts";
+
 
 
 
 // @api - email/ GET
 // @desc - get emails
+
 export const getEmails = async (req: Request, res: Response) => {
   try {
-    const access_token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+    const access_token = (req.headers.authorization && req.headers.authorization.split(' ')[1]) as string;
     const limit = req.headers.limit ? +req.headers?.limit : 0;
-    const response = await axios.get('https://www.googleapis.com/gmail/v1/users/me/messages', {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
-    const messages = response.data.messages;
 
-    const result = [];
-    for (let i = limit; i < limit + 5; i++) {
-      const emailDetails = await axios.get(
-        `https://www.googleapis.com/gmail/v1/users/me/messages/${messages[i].id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        }
-      );
-      const senderDetails = emailDetails.data.payload.headers.filter((header: any) => {
-        return header.name === 'From'
-      })
-      result.push({ email: emailDetails.data.snippet, sender: senderDetails[0]?.value })
-    }
+    const result=await fetchEmailService(access_token,limit);    
+      emailQueue.add("email-fetch-job", { access_token,latestSender:result[0].sender},) 
+      
+    
     res.status(200).json({
       status: "sucess", data: result
       , message: "email details"
     });
+
   } catch (e: any) {
     res.status(400).json({ status: "failure", message: e });
 
