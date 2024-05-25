@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 function Dashboard() {
   const [data,setData]=useState([]);
   const [limit,setLimit]=useState(0);
+  const [isLoading,setIsLoading]=useState(false);
   const [isError,setIsError]=useState(false);
   const navigate=useNavigate();
   let url=process.env.REACT_APP_SERVER_URL;
@@ -22,6 +23,7 @@ function Dashboard() {
   async function fetchEmails(emailCount){
     try {
       setData([]);
+      setIsLoading(true);
       setIsError(false);
       const access_token=JSON.parse(localStorage.getItem("token"));
       const mailType=JSON.parse(localStorage.getItem("mail"))
@@ -35,9 +37,11 @@ function Dashboard() {
       const response = await axios.get(`${url}/mail/${endpoint}`,config);
       setData(response.data.data);
       setLimit(emailCount);
+      setIsLoading(false);
   
    } catch (error) {
     setIsError(true);
+    setIsLoading(false);
     console.log(error);   
    }
   }
@@ -61,7 +65,7 @@ function Dashboard() {
       </div>
       <hr></hr>
       <div>
-    <EmailContainer isError={isError} limit={limit} data={data} fetchEmails={fetchEmails}></EmailContainer>
+    <EmailContainer isLoading={isLoading} isError={isError} limit={limit} data={data} fetchEmails={fetchEmails}></EmailContainer>
       </div>
       </div>
       <div className='flex justify-end p-2'>

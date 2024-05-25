@@ -5,7 +5,7 @@ import { IoIosArrowForward } from 'react-icons/io'
 import { IoIosArrowBack } from 'react-icons/io'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
-function EmailContainer({ data,fetchEmails,limit,isError}) {
+function EmailContainer({ data,fetchEmails,limit,isError,isLoading}) {
   const [isOpen, setIsOpen] = useState(false)
   const [emailContent,setEmailContent]=useState();
   return (
@@ -38,7 +38,8 @@ function EmailContainer({ data,fetchEmails,limit,isError}) {
           <div className="button-container flex justify-end mt-10">
             <button>
               <IoIosArrowBack onClick={()=>{
-                if(limit-5>=5){
+            
+                if(limit-5>=0){
                   fetchEmails(limit-5)
                 }
              }} size={25}></IoIosArrowBack>
@@ -55,8 +56,10 @@ function EmailContainer({ data,fetchEmails,limit,isError}) {
       <EmailPop sender={emailContent.sender} isOpen={isOpen} setIsOpen={setIsOpen} content={emailContent.content}></EmailPop>
       }
 
-      {data.length===0 &&(!isError) && <Skeleton count={5} baseColor='#202124' /> }
+      {data.length===0 &&  isLoading && <Skeleton count={5} baseColor='#202124' /> }
       {isError && <h1 className='mt-4 text-slate-200'>Sorry. Couldn't Fetch Emails,Try Again</h1>}
+      {data.length===0 && !isError && (!isLoading)  && <p className="mt-4 text-slate-200">No More Emails To Show</p>
+      }
     </>
   )
 }

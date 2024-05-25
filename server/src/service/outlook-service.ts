@@ -6,7 +6,6 @@ export const fetchOutLookEmailService=async(access_token:string,limit:number)=>{
       },
     });
     const messages = response.data.value;
-    console.log(messages[0].sender);
     const result = [];
     for (let i = limit; i < limit + 5; i++) {
       if(messages.length>i){

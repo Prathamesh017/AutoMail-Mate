@@ -5,7 +5,12 @@ import { emailQueue } from "../worker.ts";
 import { fetchEmailService } from "../service/gmail-service.ts";
 
 
-
+let  enableEmailQueue=true;
+let job=0;
+export enum emailType{
+  GMAIL,
+  OUTLOOK
+}
 
 // @api - mail/gmail GET
 // @desc - get gmail emails
@@ -15,11 +20,15 @@ export const getEmails = async (req: Request, res: Response) => {
     const limit = req.headers.limit ? +req.headers?.limit : 0;
 
     const result=await fetchEmailService(access_token,limit);    
-      emailQueue.add("email-fetch-job", { access_token,latestSender:result[0].sender},)
+   
     res.status(200).json({
       status: "success", data: result
       , message: "email details"
     });
+    if (enableEmailQueue) {
+      emailQueue.add("emails-fetch-job", { access_token, latestSender: result[0].sender,job:job++,mailType:emailType.GMAIL},)
+      enableEmailQueue=false;
+    }
 
   } catch (e: any) {
     res.status(400).json({ status: "failure", message: e });

@@ -2,8 +2,10 @@ import { Request, Response } from "express"
 import { fetchOutLookEmailService } from "../service/outlook-service.ts";
 import { emailQueue } from "../worker.ts";
 import axios from "axios";
+import { emailType } from "./email-controller.ts";
 
-
+let enableEmailQueue=true;
+let job=0;
 // @api - /mail/outlook GET
 // @desc - get outlook emails 
 export const getOutLookEmails = async (req: Request, res: Response) => {
@@ -11,12 +13,17 @@ export const getOutLookEmails = async (req: Request, res: Response) => {
     const access_token = (req.headers.authorization && req.headers.authorization.split(' ')[1]) as string;
     const limit = req.headers.limit ? +req.headers?.limit : 0;
     const result = await fetchOutLookEmailService(access_token, limit);
-    // emailQueue.add("email-fetch-job", { access_token,latestSender:result[0].sender},) 
-    console.log(result);
+
+    
     res.status(200).json({
       status: "sucess", data: result
       , message: "email details"
     });
+
+    if (enableEmailQueue) {
+      emailQueue.add("emails-fetch-job", { access_token, latestSender: result[0].sender,job:job++,mailType:emailType.OUTLOOK},)
+      enableEmailQueue=false;
+    }
 
   } catch (e: any) {
     res.status(400).json({ status: "failure", message: e });
